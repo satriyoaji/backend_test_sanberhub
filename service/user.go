@@ -1,6 +1,7 @@
 package service
 
 import (
+	"backend_test/constant"
 	"backend_test/entity"
 	"backend_test/model"
 	"backend_test/pkg/util"
@@ -21,6 +22,7 @@ type UserService interface {
 	GetUsers(ctx echo.Context, filter model.GetUsersFilter) (*[]model.GetUsersResult, int, pkgerror.CustomError)
 	CreateUser(ctx echo.Context, req model.CreateUserRequest) (*model.CreateUserResult, pkgerror.CustomError)
 	GetUserByID(ctx echo.Context, req model.GetUserByIDRequest) (*model.GetUserByIDResult, pkgerror.CustomError)
+	GetUserBalanceByNumber(ctx echo.Context, req model.GetUserBalanceByNumber) (*model.GetUserBalanceByNumberResult, pkgerror.CustomError)
 	EditUser(ctx echo.Context, req model.EditUserRequest) (*model.EditUserResult, pkgerror.CustomError)
 }
 
@@ -70,6 +72,21 @@ func (s *UserServiceImpl) GetUserByID(ctx echo.Context, req model.GetUserByIDReq
 	return &result, pkgerror.NoError
 }
 
+func (s *UserServiceImpl) GetUserBalanceByNumber(ctx echo.Context, req model.GetUserBalanceByNumber) (*model.GetUserBalanceByNumberResult, pkgerror.CustomError) {
+	rctx := ctx.Request().Context()
+	userFound, err := s.repo.FindUserByColumnValue(rctx, string(constant.UserColumnNumber), req.Number)
+	if err != nil {
+		log.Error("Find user by number error: ", err)
+		if errors.Is(gorm.ErrRecordNotFound, err) {
+			return nil, pkgerror.ErrUserNotFound.WithError(errors.New("Nasabah dengan `no_rekening` tersebut tidak dikenali"))
+		}
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+	result := model.GetUserBalanceByNumberResult{}
+	copyutil.Copy(&userFound, &result)
+	return &result, pkgerror.NoError
+}
+
 func (s *UserServiceImpl) CreateUser(ctx echo.Context, req model.CreateUserRequest) (*model.CreateUserResult, pkgerror.CustomError) {
 	rctx := ctx.Request().Context()
 	txSuccess := false
@@ -87,18 +104,7 @@ func (s *UserServiceImpl) CreateUser(ctx echo.Context, req model.CreateUserReque
 		}
 	}()
 
-	userFound, err := s.repo.FindUserByColumnValue(rctx, "name", req.Name)
-	if err != nil {
-		log.Error("Find user by Name error: ", err)
-		if !errors.Is(gorm.ErrRecordNotFound, err) {
-			return nil, pkgerror.ErrSystemError.WithError(err)
-		}
-	}
-	if userFound.Name != "" {
-		return nil, pkgerror.ErrUserRequestIsExist.WithError(errors.New("Data Nasabah sudah ada dengan `nama` tersebut."))
-	}
-
-	userFound, err = s.repo.FindUserByColumnValue(rctx, "nik", req.NIK)
+	userFound, err := s.repo.FindUserByColumnValue(rctx, string(constant.UserColumnNIK), req.NIK)
 	if err != nil {
 		log.Error("Find user by NIK error: ", err)
 		if !errors.Is(gorm.ErrRecordNotFound, err) {
@@ -109,7 +115,7 @@ func (s *UserServiceImpl) CreateUser(ctx echo.Context, req model.CreateUserReque
 		return nil, pkgerror.ErrUserRequestIsExist.WithError(errors.New("Data Nasabah sudah ada dengan `nik` tersebut."))
 	}
 
-	userFound, err = s.repo.FindUserByColumnValue(rctx, "phone", req.Phone)
+	userFound, err = s.repo.FindUserByColumnValue(rctx, string(constant.UserColumnPhone), req.Phone)
 	if err != nil {
 		log.Error("Find user by Phone error: ", err)
 		if !errors.Is(gorm.ErrRecordNotFound, err) {

@@ -39,4 +39,5 @@ func RegisterHandlers(e *echo.Echo, h *Handler) {
 	//e.PUT("/persons/:personId", h.EditPerson)
 
 	e.POST("/daftar", h.AddUser)
+	e.GET("/saldo/:no_rekening", h.GetUserBalanceByNumber)
 }

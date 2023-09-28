@@ -18,3 +18,15 @@ func (h *Handler) AddUser(ctx echo.Context) error {
 	}
 	return responseutil.SendErrorResponse(ctx, ce)
 }
+
+func (h *Handler) GetUserBalanceByNumber(ctx echo.Context) error {
+	req := model.GetUserBalanceByNumber{}
+	if err := validator.BindAndValidate(ctx, &req); !err.IsNoError() {
+		return responseutil.SendErrorResponse(ctx, err)
+	}
+	result, ce := h.userService.GetUserBalanceByNumber(ctx, req)
+	if ce.IsNoError() {
+		return responseutil.SendSuccessReponse(ctx, result, nil)
+	}
+	return responseutil.SendErrorResponse(ctx, ce)
+}

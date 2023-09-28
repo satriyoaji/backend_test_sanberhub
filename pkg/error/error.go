@@ -30,6 +30,6 @@ var (
 	ErrUndefinedPathPermission CustomError = CustomError{Code: "0003", Msg: "Undefined request path and/or permission mapping", HttpCode: http.StatusNotFound}
 	ErrForbiddenRequest        CustomError = CustomError{Code: "0004", Msg: "Request forbidden. Operation not allowed", HttpCode: http.StatusForbidden}
 	ErrPersonNotFound          CustomError = CustomError{Code: "0005", Msg: "Person not found", HttpCode: http.StatusNotFound}
-	ErrUserNotFound            CustomError = CustomError{Code: "0005", Msg: "User not found", HttpCode: http.StatusNotFound}
+	ErrUserNotFound            CustomError = CustomError{Code: "0005", Msg: "User not found", HttpCode: http.StatusBadRequest}
 	ErrUserRequestIsExist      CustomError = CustomError{Code: "0006", Msg: "User is existed", HttpCode: http.StatusBadRequest}
 )

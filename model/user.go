@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"github.com/shopspring/decimal"
+	"time"
+)
 
 type GetUsersFilter struct {
 	Name        string `query:"name"`
@@ -21,16 +24,20 @@ type GetUserByIDRequest struct {
 	UserID int `param:"personId" validate:"required"`
 }
 
-type GetUserCountryByNameRequest struct {
-	Name string `param:"name" validate:"required"`
-}
-
 type GetUserByIDResult struct {
 	ID        int       `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Name      string    `json:"name"`
 	Country   string    `json:"country"`
+}
+
+type GetUserBalanceByNumber struct {
+	Number string `param:"no_rekening" validate:"required"`
+}
+
+type GetUserBalanceByNumberResult struct {
+	Balance decimal.Decimal `json:"saldo"`
 }
 
 type EditUserRequest struct {
