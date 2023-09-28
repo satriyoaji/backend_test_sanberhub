@@ -42,3 +42,15 @@ func (h *Handler) SaveBalanceUser(ctx echo.Context) error {
 	}
 	return responseutil.SendErrorResponse(ctx, ce)
 }
+
+func (h *Handler) WithdrawalBalanceUser(ctx echo.Context) error {
+	req := model.WithdrawalBalanceUserRequest{}
+	if err := validator.BindAndValidate(ctx, &req); !err.IsNoError() {
+		return responseutil.SendErrorResponse(ctx, err)
+	}
+	result, ce := h.userService.WithdrawalBalanceUser(ctx, req)
+	if ce.IsNoError() {
+		return responseutil.SendSuccessReponse(ctx, result, nil)
+	}
+	return responseutil.SendErrorResponse(ctx, ce)
+}

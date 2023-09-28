@@ -25,6 +25,7 @@ type UserService interface {
 	GetUserBalanceByNumber(ctx echo.Context, req model.GetUserBalanceByNumber) (*model.GetUserBalanceResult, pkgerror.CustomError)
 	EditUser(ctx echo.Context, req model.EditUserRequest) (*model.EditUserResult, pkgerror.CustomError)
 	SaveBalanceUser(ctx echo.Context, req model.SaveBalanceUserRequest) (*model.GetUserBalanceResult, pkgerror.CustomError)
+	WithdrawalBalanceUser(ctx echo.Context, req model.WithdrawalBalanceUserRequest) (*model.GetUserBalanceResult, pkgerror.CustomError)
 }
 
 type UserServiceImpl struct {
@@ -216,6 +217,54 @@ func (s *UserServiceImpl) SaveBalanceUser(ctx echo.Context, req model.SaveBalanc
 	}()
 
 	sumBalance := user.Balance.InexactFloat64() + float64(req.Amount)
+	user.Balance = decimal.NewFromFloat(sumBalance)
+	err = s.repo.UpdateUser(rctx, &user)
+	if err != nil {
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+	// Commit transaction
+	err = s.repo.TxCommit()
+	if err != nil {
+		log.Error("Commit db transaction error: ", err)
+	}
+	result := model.GetUserBalanceResult{}
+	copyutil.Copy(&user, &result)
+	txSuccess = true
+	return &result, pkgerror.NoError
+}
+
+func (s *UserServiceImpl) WithdrawalBalanceUser(ctx echo.Context, req model.WithdrawalBalanceUserRequest) (*model.GetUserBalanceResult, pkgerror.CustomError) {
+	rctx := ctx.Request().Context()
+	user, err := s.repo.FindUserByColumnValue(rctx, string(constant.UserColumnNumber), req.Number)
+	if err != nil {
+		log.Error("Find user by number error: ", err)
+		if errors.Is(gorm.ErrRecordNotFound, err) {
+			return nil, pkgerror.ErrUserNotFound.WithError(errors.New("Nasabah dengan `no_rekening` tersebut tidak dikenali"))
+		}
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+	// Start transaction
+	txSuccess := false
+	err = s.repo.TxBegin()
+	if err != nil {
+		log.Error("Start db transaction error: ", err)
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+	defer func() {
+		if r := recover(); r != nil || !txSuccess {
+			err = s.repo.TxRollback()
+			if err != nil {
+				log.Error("Rollback db transaction error: ", err)
+			}
+		}
+	}()
+
+	// if balance not enough
+	if user.Balance.InexactFloat64() < float64(req.Amount) {
+		return nil, pkgerror.ErrUserBalanceNotEnough.WithError(errors.New("Saldo nasabah tidak mencukupi"))
+	}
+
+	sumBalance := user.Balance.InexactFloat64() - float64(req.Amount)
 	user.Balance = decimal.NewFromFloat(sumBalance)
 	err = s.repo.UpdateUser(rctx, &user)
 	if err != nil {

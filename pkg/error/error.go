@@ -32,4 +32,5 @@ var (
 	ErrPersonNotFound          CustomError = CustomError{Code: "0005", Msg: "Person not found", HttpCode: http.StatusNotFound}
 	ErrUserNotFound            CustomError = CustomError{Code: "0005", Msg: "User not found", HttpCode: http.StatusBadRequest}
 	ErrUserRequestIsExist      CustomError = CustomError{Code: "0006", Msg: "User is existed", HttpCode: http.StatusBadRequest}
+	ErrUserBalanceNotEnough    CustomError = CustomError{Code: "0006", Msg: "User balance is not enough", HttpCode: http.StatusBadRequest}
 )

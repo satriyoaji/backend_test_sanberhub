@@ -71,3 +71,8 @@ type SaveBalanceUserRequest struct {
 	Number string `json:"no_rekening" validate:"required,notblank"`
 	Amount int    `json:"nominal" validate:"required,notblank"`
 }
+
+type WithdrawalBalanceUserRequest struct {
+	Number string `json:"no_rekening" validate:"required,notblank"`
+	Amount int    `json:"nominal" validate:"required,notblank"`
+}
