@@ -222,6 +222,18 @@ func (s *UserServiceImpl) SaveBalanceUser(ctx echo.Context, req model.SaveBalanc
 	if err != nil {
 		return nil, pkgerror.ErrSystemError.WithError(err)
 	}
+
+	// log to mutations
+	mutation := entity.Mutation{
+		Number: req.Number,
+		Code:   string(constant.MutationCodeSave),
+		Amount: decimal.NewFromInt(int64(req.Amount)),
+	}
+	err = s.repo.CreateMutation(rctx, &mutation)
+	if err != nil {
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+
 	// Commit transaction
 	err = s.repo.TxCommit()
 	if err != nil {
@@ -270,6 +282,18 @@ func (s *UserServiceImpl) WithdrawalBalanceUser(ctx echo.Context, req model.With
 	if err != nil {
 		return nil, pkgerror.ErrSystemError.WithError(err)
 	}
+
+	// log to mutations
+	mutation := entity.Mutation{
+		Number: req.Number,
+		Code:   string(constant.MutationCodeWithdrawal),
+		Amount: decimal.NewFromInt(int64(req.Amount)),
+	}
+	err = s.repo.CreateMutation(rctx, &mutation)
+	if err != nil {
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+
 	// Commit transaction
 	err = s.repo.TxCommit()
 	if err != nil {

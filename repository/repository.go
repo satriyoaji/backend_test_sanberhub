@@ -30,6 +30,11 @@ type Repository interface {
 	FindUserByID(ctx context.Context, id uint) (entity.User, error)
 	FindUserByColumnValue(ctx context.Context, columnName string, search interface{}) (entity.User, error)
 	UpdateUser(ctx context.Context, merchant *entity.User) error
+
+	// Mutation
+	FindMutationByNumber(ctx context.Context, accountNumber string) ([]entity.Mutation, error)
+	CreateMutation(ctx context.Context, mutation *entity.Mutation) error
+	UpdateMutation(ctx context.Context, mutation *entity.Mutation) error
 }
 
 type DefaultRepository struct {
