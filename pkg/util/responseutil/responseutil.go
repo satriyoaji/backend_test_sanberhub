@@ -27,7 +27,7 @@ func CreateErrorResponse(err pkgerror.CustomError) model.ResponseBody {
 	}
 	if !config.Data.IsEnvProduction() && err.Err != nil {
 		e := err.Err.Error()
-		body.ErrorDebug = &e
+		body.ErrorRemark = &e
 	}
 	return body
 }

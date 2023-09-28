@@ -6,5 +6,5 @@ type ResponseBody struct {
 	Data         interface{} `json:"data"`
 	Pagination   *Pagination `json:"pagination"`
 	ErrorMessage *string     `json:"error_message"`
-	ErrorDebug   *string     `json:"error_debug,omitempty"`
+	ErrorRemark  *string     `json:"remark,omitempty"`
 }
