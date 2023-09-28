@@ -1,0 +1,11 @@
+port: ":8080"
+env: staging
+app_code: backend_test
+db: 
+  host: localhost
+  username: postgres
+  password: postgres
+  name: backend_test_sanberhub
+  port: 5432
+remote_timezone_url: https://timeapi.io/api
+jwt_encryption_key: 9c1d50f1bda04eaf919b15428e6b8676
