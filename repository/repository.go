@@ -32,7 +32,7 @@ type Repository interface {
 	UpdateUser(ctx context.Context, merchant *entity.User) error
 
 	// Mutation
-	FindMutationByNumber(ctx context.Context, accountNumber string) ([]entity.Mutation, error)
+	FindMutationsByNumber(ctx context.Context, accountNumber string) ([]entity.Mutation, error)
 	CreateMutation(ctx context.Context, mutation *entity.Mutation) error
 	UpdateMutation(ctx context.Context, mutation *entity.Mutation) error
 }

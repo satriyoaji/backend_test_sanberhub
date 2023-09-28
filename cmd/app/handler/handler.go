@@ -32,14 +32,10 @@ func defaultPageRequest(pr *model.PageRequest) {
 }
 
 func RegisterHandlers(e *echo.Echo, h *Handler) {
-	//e.GET("/persons", h.GetPersons)
-	//e.GET("/persons/:personId", h.GetPersonByID)
-	//e.GET("/persons/get-country/:name", h.GetPersonCountryByName)
-	//e.POST("/persons", h.AddPerson)
-	//e.PUT("/persons/:personId", h.EditPerson)
-
 	e.POST("/daftar", h.AddUser)
 	e.GET("/saldo/:no_rekening", h.GetUserBalanceByNumber)
 	e.POST("/tabung", h.SaveBalanceUser)
 	e.POST("/tarik", h.WithdrawalBalanceUser)
+	e.GET("/mutasi/:no_rekening", h.GetMutationUserByNumber)
+
 }

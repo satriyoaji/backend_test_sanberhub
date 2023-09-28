@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (d DefaultRepository) FindMutationByNumber(ctx context.Context, accountNumber string) ([]entity.Mutation, error) {
+func (d DefaultRepository) FindMutationsByNumber(ctx context.Context, accountNumber string) ([]entity.Mutation, error) {
 	var mutations []entity.Mutation
 	err := d.handler.Tx.WithContext(ctx).Where("number=?", accountNumber).Find(&mutations).Error
 	return mutations, err

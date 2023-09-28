@@ -8,3 +8,9 @@ type ResponseBody struct {
 	ErrorMessage *string     `json:"error_message"`
 	ErrorRemark  *string     `json:"remark,omitempty"`
 }
+
+type ResponseBodyMutation struct {
+	Status string      `json:"status"`
+	Code   string      `json:"code"`
+	Data   interface{} `json:"mutasi"`
+}

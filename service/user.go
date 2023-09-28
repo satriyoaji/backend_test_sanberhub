@@ -26,6 +26,7 @@ type UserService interface {
 	EditUser(ctx echo.Context, req model.EditUserRequest) (*model.EditUserResult, pkgerror.CustomError)
 	SaveBalanceUser(ctx echo.Context, req model.SaveBalanceUserRequest) (*model.GetUserBalanceResult, pkgerror.CustomError)
 	WithdrawalBalanceUser(ctx echo.Context, req model.WithdrawalBalanceUserRequest) (*model.GetUserBalanceResult, pkgerror.CustomError)
+	GetUserMutationsByNumber(ctx echo.Context, req model.GetMutationByAccountNumber) ([]model.GetMutationByAccountNumberResult, pkgerror.CustomError)
 }
 
 type UserServiceImpl struct {
@@ -303,4 +304,30 @@ func (s *UserServiceImpl) WithdrawalBalanceUser(ctx echo.Context, req model.With
 	copyutil.Copy(&user, &result)
 	txSuccess = true
 	return &result, pkgerror.NoError
+}
+
+func (s *UserServiceImpl) GetUserMutationsByNumber(ctx echo.Context, req model.GetMutationByAccountNumber) ([]model.GetMutationByAccountNumberResult, pkgerror.CustomError) {
+	rctx := ctx.Request().Context()
+	_, err := s.repo.FindUserByColumnValue(rctx, string(constant.UserColumnNumber), req.Number)
+	if err != nil {
+		log.Error("Find user by number error: ", err)
+		if errors.Is(gorm.ErrRecordNotFound, err) {
+			return nil, pkgerror.ErrUserNotFound.WithError(errors.New("Nasabah dengan `no_rekening` tersebut tidak dikenali"))
+		}
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+
+	mutations, err := s.repo.FindMutationsByNumber(rctx, req.Number)
+	if err != nil {
+		log.Error("Find user mutations by number error: ", err)
+		if errors.Is(gorm.ErrRecordNotFound, err) {
+			return nil, pkgerror.ErrUserNotFound.WithError(errors.New("Mutasi dengan `no_rekening` tersebut belum ada data"))
+		}
+		return nil, pkgerror.ErrSystemError.WithError(err)
+	}
+	fmt.Println("mutations: ", mutations)
+
+	var result []model.GetMutationByAccountNumberResult
+	copyutil.Copy(&mutations, &result)
+	return result, pkgerror.NoError
 }
