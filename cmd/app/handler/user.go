@@ -30,3 +30,15 @@ func (h *Handler) GetUserBalanceByNumber(ctx echo.Context) error {
 	}
 	return responseutil.SendErrorResponse(ctx, ce)
 }
+
+func (h *Handler) SaveBalanceUser(ctx echo.Context) error {
+	req := model.SaveBalanceUserRequest{}
+	if err := validator.BindAndValidate(ctx, &req); !err.IsNoError() {
+		return responseutil.SendErrorResponse(ctx, err)
+	}
+	result, ce := h.userService.SaveBalanceUser(ctx, req)
+	if ce.IsNoError() {
+		return responseutil.SendSuccessReponse(ctx, result, nil)
+	}
+	return responseutil.SendErrorResponse(ctx, ce)
+}

@@ -36,7 +36,7 @@ type GetUserBalanceByNumber struct {
 	Number string `param:"no_rekening" validate:"required"`
 }
 
-type GetUserBalanceByNumberResult struct {
+type GetUserBalanceResult struct {
 	Balance decimal.Decimal `json:"saldo"`
 }
 
@@ -65,4 +65,9 @@ type CreateUserRequest struct {
 type CreateUserResult struct {
 	Name   string `json:"nama"`
 	Number string `json:"no_rekening"`
+}
+
+type SaveBalanceUserRequest struct {
+	Number string `json:"no_rekening" validate:"required,notblank"`
+	Amount int    `json:"nominal" validate:"required,notblank"`
 }
