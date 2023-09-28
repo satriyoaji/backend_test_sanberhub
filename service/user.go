@@ -98,6 +98,17 @@ func (s *UserServiceImpl) CreateUser(ctx echo.Context, req model.CreateUserReque
 		return nil, pkgerror.ErrUserRequestIsExist.WithError(errors.New("Data Nasabah sudah ada dengan `nama` tersebut."))
 	}
 
+	userFound, err = s.repo.FindUserByColumnValue(rctx, "nik", req.NIK)
+	if err != nil {
+		log.Error("Find user by NIK error: ", err)
+		if !errors.Is(gorm.ErrRecordNotFound, err) {
+			return nil, pkgerror.ErrSystemError.WithError(err)
+		}
+	}
+	if userFound.Phone != "" {
+		return nil, pkgerror.ErrUserRequestIsExist.WithError(errors.New("Data Nasabah sudah ada dengan `nik` tersebut."))
+	}
+
 	userFound, err = s.repo.FindUserByColumnValue(rctx, "phone", req.Phone)
 	if err != nil {
 		log.Error("Find user by Phone error: ", err)
