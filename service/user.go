@@ -260,7 +260,7 @@ func (s *UserServiceImpl) WithdrawalBalanceUser(ctx echo.Context, req model.With
 	}()
 
 	// if balance not enough
-	if user.Balance.InexactFloat64() < float64(req.Amount) {
+	if user.Balance.LessThan(decimal.NewFromInt(int64(req.Amount))) {
 		return nil, pkgerror.ErrUserBalanceNotEnough.WithError(errors.New("Saldo nasabah tidak mencukupi"))
 	}
 
