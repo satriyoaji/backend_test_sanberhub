@@ -12,9 +12,10 @@ Installation & run DB and server
 2. Copy file `.env.docker.example` to `.env` (if not existed) and adjust the variables with your own preferences. it's used to run the docker env vars.
 3. Fill out the DB connection config based on you preference Postgres DB. Make sure the DB variables in `./configs/config.yml` is same as `.env` file.
 4. At the line 1 - 5 in the Makefile, adjust your local DB connection from your `.env` file to setting the DB migration config
-5. From root directory, then run `make migrate-up` to migrate the tables
-6. From root directory, then run `make run` or `go run cmd/app/main.go`
-7. The service will be available on `localhost:8081` on your local (address & port based in `./configs/config.yml` file)
+5. From root directory, then run `docker compose up -d` to run the PostgreSQL database in docker container
+6. From root directory, then run `make migrate-up` to migrate the tables
+7. From root directory, then run `make run` or `go run cmd/app/main.go`
+8. The service will be available on `localhost:8081` on your local (address & port based in `./configs/config.yml` file)
 
 
 In this source code has refactored and written to adopt Clean Architecture with some modified code and directory styles.
