@@ -1,8 +1,8 @@
 DB_HOST:= localhost
-DB_USERNAME:= postgres
-DB_PASSWORD:= postgres
+DB_USERNAME:= root
+DB_PASSWORD:= password
 DB_NAME:= backend_test_sanberhub
-DB_PORT:= 5432
+DB_PORT:= 54321
 
 run:
 	go run cmd/app/main.go
